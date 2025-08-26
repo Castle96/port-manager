@@ -1,0 +1,73 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Port Manager API Advanced Metrics",
+    "tags": ["port-manager", "api", "prometheus"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "10s",
+    "panels": [
+      {
+        "type": "stat",
+        "title": "Total Reserve Requests",
+        "datasource": "Prometheus",
+        "targets": [
+          { "expr": "reserve_requests_total", "refId": "A" }
+        ],
+        "id": 1,
+        "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 }
+      },
+      {
+        "type": "stat",
+        "title": "Total Release Requests",
+        "datasource": "Prometheus",
+        "targets": [
+          { "expr": "release_requests_total", "refId": "B" }
+        ],
+        "id": 2,
+        "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 }
+      },
+      {
+        "type": "timeseries",
+        "title": "Reserve Request Rate (per minute)",
+        "datasource": "Prometheus",
+        "targets": [
+          { "expr": "rate(reserve_requests_total[1m])", "refId": "C" }
+        ],
+        "id": 3,
+        "gridPos": { "x": 0, "y": 4, "w": 12, "h": 6 }
+      },
+      {
+        "type": "timeseries",
+        "title": "Release Request Rate (per minute)",
+        "datasource": "Prometheus",
+        "targets": [
+          { "expr": "rate(release_requests_total[1m])", "refId": "D" }
+        ],
+        "id": 4,
+        "gridPos": { "x": 0, "y": 10, "w": 12, "h": 6 }
+      },
+      {
+        "type": "timeseries",
+        "title": "All HTTP Requests",
+        "datasource": "Prometheus",
+        "targets": [
+          { "expr": "api_http_requests_total", "refId": "E" }
+        ],
+        "id": 5,
+        "gridPos": { "x": 0, "y": 16, "w": 12, "h": 6 }
+      },
+      {
+        "type": "stat",
+        "title": "API Uptime",
+        "datasource": "Prometheus",
+        "targets": [
+          { "expr": "up{job=\"port-manager-api\"}", "refId": "F" }
+        ],
+        "id": 6,
+        "gridPos": { "x": 0, "y": 22, "w": 6, "h": 4 }
+      }
+    ]
+  }
+}

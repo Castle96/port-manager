@@ -1,0 +1,110 @@
+- name: Reserve a free port
+  request:
+    method: POST
+    url: http://localhost:8080/reserve
+    json: [8080, "web-server"]
+  response:
+    status_code: 200
+    body: Reserved
+
+- name: Reserve an already reserved port
+  request:
+    method: POST
+    url: http://localhost:8080/reserve
+    json: [8080, "web-server"]
+  response:
+    status_code: 400
+    body: Error: Port 8080 is already reserved.
+
+- name: Release a reserved port
+  request:
+    method: POST
+    url: http://localhost:8080/release
+    json: 8080
+  response:
+    status_code: 200
+    body: Released
+
+- name: Release a non-reserved port
+  request:
+    method: POST
+    url: http://localhost:8080/release
+    json: 9999
+  response:
+    status_code: 400
+    body: Error: Port 9999 was not reserved.
+
+- name: Check status of reserved port
+  request:
+    method: GET
+    url: http://localhost:8080/status/8080
+  response:
+    status_code: 200
+    body: Available
+
+- name: Reserve with invalid port number
+  request:
+    method: POST
+    url: http://localhost:8080/reserve
+    json: [-1, "bad-service"]
+  response:
+    status_code: 400
+
+- name: Reserve with missing service name
+  request:
+    method: POST
+    url: http://localhost:8080/reserve
+    json: [8081]
+  response:
+    status_code: 400
+
+- name: Status of never-reserved port
+  request:
+    method: GET
+    url: http://localhost:8080/status/9999
+  response:
+    status_code: 200
+    body: Available
+
+- name: Reserve, release, and check status
+  request:
+    method: POST
+    url: http://localhost:8080/release
+    json: 8082
+  response:
+    status_code: 400
+    body: Error: Port 8082 was not reserved.
+
+- name: Reserve port 8082
+  request:
+    method: POST
+    url: http://localhost:8080/reserve
+    json: [8082, "test-service"]
+  response:
+    status_code: 200
+    body: Reserved
+
+- name: Status of reserved port 8082
+  request:
+    method: GET
+    url: http://localhost:8080/status/8082
+  response:
+    status_code: 200
+    body: Reserved
+
+- name: Release port 8082
+  request:
+    method: POST
+    url: http://localhost:8080/release
+    json: 8082
+  response:
+    status_code: 200
+    body: Released
+
+- name: Status of released port 8082
+  request:
+    method: GET
+    url: http://localhost:8080/status/8082
+  response:
+    status_code: 200
+    body: Available

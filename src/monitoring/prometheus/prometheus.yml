@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'apache'
+    static_configs:
+      - targets: ['web_server:80']
+  - job_name: 'port-manager-api'
+    static_configs:
+      - targets: ['172.17.0.1:8080']
+    metrics_path: /metrics

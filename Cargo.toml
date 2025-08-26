@@ -1,0 +1,17 @@
+[workspace]
+members = [
+    "src/api"
+]
+
+[package]
+name = "port-manager"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ratatui = "0.26"
+crossterm = "0.27"
+procfs = "0.16"
+nix = { version = "0.28", features = ["signal"] }
+netstat2 = "0.11.2"
+
