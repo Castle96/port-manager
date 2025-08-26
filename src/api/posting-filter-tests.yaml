@@ -1,0 +1,65 @@
+# Posting test cases for advanced filtering on /ports endpoint
+
+- name: Filter by protocol TCP
+  request:
+    method: GET
+    url: http://localhost:8080/ports?protocol=TCP
+  expect:
+    status: 200
+    body: !!js/regexp /"protocol"\s*:\s*"TCP"/
+
+- name: Filter by state LISTEN
+  request:
+    method: GET
+    url: http://localhost:8080/ports?state=LISTEN
+  expect:
+    status: 200
+    body: !!js/regexp /"state"\s*:\s*"LISTEN"/
+
+- name: Filter by port range 8000-9000
+  request:
+    method: GET
+    url: http://localhost:8080/ports?port_start=8000&port_end=9000
+  expect:
+    status: 200
+    body: !!js/regexp /"port"\s*:\s*(8[0-9]{3}|9000)/
+
+- name: Filter by tags web,secure
+  request:
+    method: GET
+    url: http://localhost:8080/ports?tags=web,secure
+  expect:
+    status: 200
+    body: !!js/regexp /"tags"\s*:\s*\[.*"web".*"secure".*\]/
+
+- name: Filter by user root
+  request:
+    method: GET
+    url: http://localhost:8080/ports?user=root
+  expect:
+    status: 200
+    body: !!js/regexp /"user"\s*:\s*"root"/
+
+- name: Filter by process name nginx
+  request:
+    method: GET
+    url: http://localhost:8080/ports?process_name=nginx
+  expect:
+    status: 200
+    body: !!js/regexp /"process_name"\s*:\s*"nginx"/
+
+- name: Combined filter TCP, LISTEN, port 8080, user root
+  request:
+    method: GET
+    url: http://localhost:8080/ports?protocol=TCP&state=LISTEN&port_start=8080&port_end=8080&user=root
+  expect:
+    status: 200
+    body: !!js/regexp /"protocol"\s*:\s*"TCP".*"state"\s*:\s*"LISTEN".*"port"\s*:\s*8080.*"user"\s*:\s*"root"/
+
+- name: No match (invalid filter)
+  request:
+    method: GET
+    url: http://localhost:8080/ports?protocol=INVALID
+  expect:
+    status: 200
+    body: []

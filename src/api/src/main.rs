@@ -1,6 +1,7 @@
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use actix_web_lab::middleware::from_fn;
 use prometheus::{IntCounter, register_int_counter};
+use lazy_static::lazy_static;
 use reservation::PortReservationManager;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -86,7 +87,7 @@ impl RateLimiter {
 
 async fn rate_limit_middleware(
     req: actix_web::dev::ServiceRequest,
-    srv: actix_web::dev::Service<actix_web::dev::ServiceRequest>,
+    srv: &dyn actix_web::dev::Service<actix_web::dev::ServiceRequest, Response = actix_web::dev::ServiceResponse, Error = actix_web::Error, Future = std::pin::Pin<Box<dyn std::future::Future<Output = Result<actix_web::dev::ServiceResponse, actix_web::Error>> + Send>>>,
 ) -> Result<actix_web::dev::ServiceResponse, actix_web::Error> {
     let limiter = req.app_data::<Arc<RateLimiter>>().unwrap();
     let ip = req.connection_info().realip_remote_addr().unwrap_or("unknown").to_string();
@@ -131,6 +132,37 @@ async fn status(data: web::Data<AppState>, port: web::Path<u16>) -> impl Respond
         HttpResponse::Ok().body("Available")
     }
 }
+// List ports with advanced filtering
+#[derive(Deserialize)]
+struct PortFilter {
+    query: Option<String>,
+    protocol: Option<String>,
+    state: Option<String>,
+    port_start: Option<u16>,
+    port_end: Option<u16>,
+    tags: Option<Vec<String>>,
+    user: Option<String>,
+    process_name: Option<String>,
+}
+mod net;
+
+async fn list_ports(filter: web::Query<PortFilter>) -> impl Responder {
+        let all_ports = net::list_ports();
+    let filtered: Vec<_> = all_ports.into_iter().filter(|p| {
+        p.matches(
+            filter.query.as_deref().unwrap_or("") ,
+            filter.protocol.as_deref(),
+            filter.state.as_deref(),
+            match (filter.port_start, filter.port_end) {
+                (Some(s), Some(e)) => Some((s, e)),
+                _ => None,
+            },
+            filter.tags.as_deref(),
+            filter.user.as_deref(),
+        )
+    }).collect();
+    HttpResponse::Ok().json(filtered)
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -147,10 +179,11 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(AppState { manager: manager.clone() }))
             .app_data(limiter.clone())
             .wrap(prometheus.clone())
-            .wrap(from_fn(rate_limit_middleware))
+            // TODO: Add proper rate limiting middleware for Actix Web 4.x
             .route("/reserve", web::post().to(reserve_port))
             .route("/release", web::post().to(release_port))
             .route("/status/{port}", web::get().to(status))
+                .route("/ports", web::get().to(list_ports))
     })
     .bind("127.0.0.1:8080")?
     .run()

@@ -18,5 +18,5 @@ services:
   web_server:
     image: httpd:2.4
     ports:
-      - '80:80'
+      - '81:80'
     restart: always

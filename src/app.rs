@@ -74,15 +74,11 @@ impl App {
     }
 
     pub fn update_filtered_ports(&mut self) {
-        if self.search.is_empty() {
-            self.filtered_ports = self.ports.clone();
-        } else {
-            self.filtered_ports = self.ports
-                .iter()
-                .cloned()
-                .filter(|p| p.matches(&self.search))
-                .collect();
-        }
+        self.filtered_ports = self.ports
+            .iter()
+            .cloned()
+            .filter(|p| p.matches(&self.search))
+            .collect();
         self.sort_ports();
     }
 
