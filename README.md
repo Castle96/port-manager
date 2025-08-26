@@ -31,11 +31,58 @@ TUI Port Manager is a terminal user interface tool for interactively viewing and
 
 ## Usage
 
-Run the program in your terminal:
+
+### TUI Demo
+
+Run the interactive terminal UI:
 
 ```bash
 cargo run
 ```
+
+Navigate, search, and manage ports using the keybindings above.
+
+### API Demo
+
+Start the API server:
+
+```bash
+cd src/api
+cargo run
+```
+
+Query open ports with advanced filtering:
+
+```bash
+# List all TCP ports
+curl "http://localhost:8080/ports?protocol=TCP" | jq
+
+# Filter by process name
+curl "http://localhost:8080/ports?process_name=nginx" | jq
+
+# Filter by port range
+curl "http://localhost:8080/ports?port_start=8000&port_end=9000" | jq
+```
+
+### Automated API Testing
+
+Run Posting tests for the API:
+
+```bash
+cd src/api
+posting default -c .
+```
+
+### Monitoring Demo
+
+Start Prometheus and Grafana:
+
+```bash
+cd src/monitoring
+docker compose up -d
+```
+
+Open Grafana at [http://localhost:3000](http://localhost:3000) and import the dashboard `port_manager_advanced_dashboard.json` for live API metrics.
 
 ## Requirements
 
