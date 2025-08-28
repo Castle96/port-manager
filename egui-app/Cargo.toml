@@ -1,0 +1,11 @@
+[package]
+name = "egui-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+egui = "0.27"
+eframe = "0.27"
+netstat2 = "0.11.2"
+tray-icon = "0.10"
+gtk = "0.18"

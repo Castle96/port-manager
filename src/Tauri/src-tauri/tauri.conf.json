@@ -1,0 +1,10 @@
+{
+  "identifier": "com.kyle.port-system",
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "port-system",
+  "version": "0.1.0",
+  "build": {
+    "beforeDevCommand": "trunk serve",
+    "beforeBuildCommand": "trunk build"
+  }
+}

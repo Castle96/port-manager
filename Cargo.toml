@@ -1,6 +1,7 @@
 [workspace]
 members = [
-    "src/api"
+    "src/api",
+    "egui-app"
 ]
 
 [package]
@@ -9,9 +10,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-ratatui = "0.26"
-crossterm = "0.27"
-procfs = "0.16"
-nix = { version = "0.28", features = ["signal"] }
+ratatui = "0.29.0"
+crossterm = "0.29.0"
+procfs = "0.17.0"
+nix = { version = "0.30.1", features = ["signal"] }
 netstat2 = "0.11.2"
 
